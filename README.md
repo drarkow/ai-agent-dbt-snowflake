@@ -5,7 +5,7 @@ data warehouse, built to explore what it takes to make a data
 warehouse genuinely usable by an LLM agent — not just queryable by
 humans who already know the schema.
 
-This project pairs with [dbt-interview-prep](#) *(link to your dbt repo)*,
+This project pairs with [dbt-interview-prep](https://github.com/drarkow/dbt-playground),
 which builds and documents the underlying data models. This repo is
 the AI/agent layer that sits on top.
 
@@ -95,9 +95,11 @@ cp .env.example .env        # then fill in real credentials
 python agent.py
 ```
 
-Requires a **read-only** Snowflake role — the agent only ever issues
-`SELECT` statements, and `run_query` rejects anything else at the tool
-level as an extra safety layer.
+Runs under a dedicated `agent_readonly` Snowflake role, scoped to
+`SELECT` only on the relevant schema — created specifically for this
+project rather than reusing a broader default role. The `run_query`
+tool also rejects any non-SELECT statement at the application level,
+as a second layer of protection.
 
 ## Evaluation / quality assurance
 
@@ -108,13 +110,10 @@ whether it called `describe_table` before querying, and whether the
 generated SQL shows a deduplication step before aggregating a
 customer-level column.
 
-*(Placeholder — filling this in once the eval suite is wired into
-CI:)*
-
+- Eval suite automated via GitHub Actions, currently manual-trigger (workflow_dispatch) while iterating
+- Link to a passing Actions run as evidence: https://github.com/drarkow/ai-agent-dbt-snowflake/actions/runs/31282673871
 - Current eval cases: dedup trap, out-of-scope question handling,
   ambiguous natural-language phrasing
-- CI status: not yet automated — currently run manually via
-  `python eval_agent.py`
 - Notable bug caught by this suite: the agent initially entered a
   retry loop and returned no answer at all when asked about data that
   doesn't exist in this model (product-level details), instead of
@@ -124,8 +123,6 @@ CI:)*
 
 ## Roadmap
 
-- [ ] Wire `eval_agent.py` into GitHub Actions, gating on regressions
 - [ ] Pull table metadata from dbt's `catalog.json` instead of a
       hardcoded string
 - [ ] Expand the eval suite beyond the current 3 cases
-- [ ] Dedicated Snowflake read-only role instead of a shared default role
