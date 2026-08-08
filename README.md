@@ -5,7 +5,7 @@ data warehouse, built to explore what it takes to make a data
 warehouse genuinely usable by an LLM agent — not just queryable by
 humans who already know the schema.
 
-This project pairs with [dbt-interview-prep](https://github.com/drarkow/dbt-playground),
+This project pairs with [dbt-playground](https://github.com/drarkow/dbt-playground),
 which builds and documents the underlying data models. This repo is
 the AI/agent layer that sits on top.
 
